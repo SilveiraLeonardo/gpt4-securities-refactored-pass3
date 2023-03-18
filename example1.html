@@ -1,0 +1,83 @@
+
+window.addEventListener('message', (event) => {
+  if (event.origin === 'https://example.com') {
+    writeMessage(event);
+  }
+}, false);
+
+function writeMessage(event) {
+  if (event.data) {
+    let data = JSON.parse(event.data);
+    if (data.message && typeof data.message === 'string' && getSizeInBytes(data.message) < 256 && validateInput(data.message) && data.nonce && typeof data.nonce === 'string' && data.nonce.length === 32 && data.signature && typeof data.signature === 'string' && data.signature.length === 64 && verifySignature(data.message, data.nonce, data.signature)) {
+      let message = sanitizeInput(data.message);
+      if (message) {
+        let encryptedMessage = encryptMessage(message);
+        if (encryptedMessage) {
+          let signature = generateSignature(encryptedMessage, data.nonce);
+          if (signature && verifySignature(encryptedMessage, data.nonce, signature)) {
+            let encryptedMessageAndSignature = encryptMessageAndSignature(encryptedMessage, signature);
+            if (encryptedMessageAndSignature) {
+              let encryptedMessageAndSignatureBase64 = btoa(encryptedMessageAndSignature);
+              if (encryptedMessageAndSignatureBase64) {
+                let encryptedMessageAndSignatureHex = hexEncode(encryptedMessageAndSignatureBase64);
+                if (encryptedMessageAndSignatureHex) {
+                  let encryptedMessageAndSignatureHexEncrypted = encryptMessage(encryptedMessageAndSignatureHex);
+                  if (encryptedMessageAndSignatureHexEncrypted) {
+                    document.getElementById("message").textContent = encryptedMessageAndSignatureHexEncrypted;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Rest of the functions remain the same
+function generateSignature(message, nonce) {
+  // Generate signature using message and nonce
+  // ...
+  return signature;
+}
+
+function encryptMessage(message) {
+  // Encrypt message using a secure encryption algorithm
+  // ...
+  return encryptedMessage;
+}
+
+function encryptMessageAndSignature(message, signature) {
+  // Encrypt message and signature using a secure encryption algorithm
+  // ...
+  return encryptedMessageAndSignature;
+}
+
+function sanitizeInput(input) {
+  // Sanitize input to prevent XSS attacks
+  // ...
+  return sanitizedInput;
+}
+
+function verifySignature(message, nonce, signature) {
+  // Verify signature using message, nonce, and signature
+  // ...
+  return isValid;
+}
+
+function validateInput(input) {
+  // Validate input to prevent malicious data
+  // ...
+  return isValid;
+}
+
+function hexEncode(input) {
+  // Hex encode input to prevent data leakage
+  // ...
+  return hexEncodedInput;
+}
+
+function getSizeInBytes(str) {
+  return (new Blob([str])).size;
+}
